@@ -12,7 +12,12 @@ class ResponsavelController extends Controller
      */
     public function index()
     {
-        //
+        $responsaveis = Responsavel::all();
+
+        return view(
+            'responsaveis.index',
+            compact('responsaveis')
+        );
     }
 
     /**
