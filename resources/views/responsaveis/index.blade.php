@@ -9,6 +9,14 @@
 
     <h1>Responsáveis</h1>
 
+    <form action="{{ route('responsaveis.store') }}" method="POST">
+        @csrf
+
+        <button type="submit">
+            + Adicionar Responsável
+        </button>
+    </form>
+
     <table border="1">
         <thead>
             <tr>
