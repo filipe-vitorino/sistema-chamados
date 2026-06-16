@@ -22,8 +22,8 @@
     @csrf
 
     <button type="submit"
-            class="btn btn-primary">
-        + Adicionar Responsável
+             class="btn btn-codificar">
+    <i class="fa-solid fa-plus me-2"></i> Novo Responsável
     </button>
 </form>
 

@@ -10,13 +10,9 @@
 
 <div class="mb-3">
 
-    <a
-        href="{{ route('chamados.create') }}"
-        class="btn btn-success">
-
-        Novo Chamado
-
-    </a>
+    <a href="{{ route('chamados.create') }}" class="btn btn-codificar">
+    <i class="fa-solid fa-plus me-2"></i> Novo Chamado
+</a>
 
 </div>
 
@@ -52,8 +48,8 @@
         </div>
 
         <div class="col-md-3">
-            <button class="btn btn-primary w-100">
-                Filtrar
+            <button type="submit" class="btn btn-dark w-100">
+                <i class="fa-solid fa-filter me-2"></i> Filtrar
             </button>
         </div>
     </div>
@@ -119,21 +115,12 @@
 
                 <td>
 
-                    <a
-                        href="{{ route('chamados.show', $chamado) }}"
-                        class="btn btn-sm btn-info">
-
-                        Histórico
-
-                    </a>
-
-                    <a
-                        href="{{ route('chamados.edit', $chamado) }}"
-                        class="btn btn-sm btn-warning">
-
-                        Editar
-
-                    </a>
+                    <a href="{{ route('chamados.show', $chamado) }}" class="btn btn-sm btn-info text-white">
+    <i class="fa-solid fa-clock-rotate-left"></i> Histórico
+</a>
+<a href="{{ route('chamados.edit', $chamado) }}" class="btn btn-sm btn-warning">
+    <i class="fa-solid fa-pen"></i> Editar
+</a>
 
                 </td>
 

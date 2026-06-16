@@ -42,9 +42,9 @@
         </div>
 
         <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">
-                Filtrar
-            </button>
+            <button type="submit" class="btn btn-dark w-100">
+    <i class="fa-solid fa-filter me-2"></i> Filtrar
+</button>
         </div>
     </div>
 </form>
