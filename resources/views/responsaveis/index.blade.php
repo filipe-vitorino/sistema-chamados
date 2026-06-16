@@ -1,44 +1,77 @@
-<!DOCTYPE html>
-<html>
+@extends('layouts.app')
 
-<head>
-    <title>Responsáveis</title>
-</head>
+@section('title', 'Responsáveis')
 
-<body>
+@section('content')
 
-    <h1>Responsáveis</h1>
+<h1 class="mb-4">Responsáveis</h1>
 
-    <form action="{{ route('responsaveis.store') }}" method="POST">
-        @csrf
+<form action="{{ route('responsaveis.store') }}"
+      method="POST"
+      class="mb-3">
+    @csrf
 
-        <button type="submit">
-            + Adicionar Responsável
-        </button>
-    </form>
+    <button type="submit"
+            class="btn btn-primary">
+        + Adicionar Responsável
+    </button>
+</form>
 
-    <table border="1">
-        <thead>
+<table class="table table-striped">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Ativo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach($responsaveis as $responsavel)
+
             <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Ativo</th>
-            </tr>
-        </thead>
 
-        <tbody>
-            @foreach($responsaveis as $responsavel)
-            <tr>
                 <td>{{ $responsavel->id }}</td>
+
                 <td>{{ $responsavel->nome }}</td>
+
                 <td>
                     {{ $responsavel->ativo ? 'Sim' : 'Não' }}
                 </td>
+
+                <td>
+
+                    <form action="{{ route('responsaveis.toggle', $responsavel) }}"
+                          method="POST">
+
+                        @csrf
+                        @method('PATCH')
+
+                        <button type="submit"
+                                class="btn btn-sm btn-warning">
+
+                            {{ $responsavel->ativo ? 'Desativar' : 'Ativar' }}
+
+                        </button>
+
+                    </form>
+
+                </td>
+                <td>
+                <a href="{{ route('responsaveis.chamados', $responsavel) }}"
+                    class="btn btn-sm btn-info">
+                    Chamados
+                </a>
+                </td>
             </tr>
-            @endforeach
-        </tbody>
-    </table>
 
-</body>
+        @endforeach
 
-</html>
+    </tbody>
+
+</table>
+
+@endsection

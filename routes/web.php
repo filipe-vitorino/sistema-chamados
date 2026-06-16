@@ -16,3 +16,12 @@ Route::resource(
 );
 
 Route::resource('chamados', ChamadoController::class);
+Route::patch(
+    '/responsaveis/{responsavel}/toggle',
+    [ResponsavelController::class, 'toggle']
+)->name('responsaveis.toggle');
+
+Route::get(
+    '/responsaveis/{responsavel}/chamados',
+    [ResponsavelController::class, 'chamados']
+)->name('responsaveis.chamados');
