@@ -1,58 +1,276 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SISTEMA DE CONTROLE DE CHAMADOS INTERNOS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web para gerenciamento de chamados internos desenvolvido como desafio técnico para a Codificar Sistemas Tecnológicos.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# ÍNDICE
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Sobre o projeto
+- Stack tecnológica e decisões arquiteturais
+- Funcionalidades implementadas
+- Requisitos
+- Instalação e execução
+- Executando os testes
+- Estrutura do projeto
+- Trade-offs e decisões de projeto
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+# SOBRE O PROJETO
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Uma empresa precisava substituir cadernos e mensagens avulsas por um sistema centralizado onde funcionários pudessem abrir chamados (suporte técnico, pedidos de equipamentos etc.) e a equipe de suporte pudesse acompanhar, distribuir e resolver essas demandas de forma organizada.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+# STACK TECNOLÓGICA E DECISÕES ARQUITETURAIS
 
-## Agentic Development
+| Camada         | Tecnologia                       | Justificativa                                                                                                                                                                                                                                                                                                                                                                                            |
+| -------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend        | Laravel 11 (PHP 8.2 ou superior) | Framework robusto com convenções sólidas, ORM expressivo (Eloquent) e ecossistema maduro. Reduz drasticamente o atrito de desenvolvimento em times pequenos.                                                                                                                                                                                                                                             |
+| Frontend       | Blade + Bootstrap 5              | O Blade elimina o atrito entre o backend e o frontend, cortando a complexidade de gerenciar estados duplicados ou builds pesados de SPAs. O Bootstrap 5 foi escolhido estrategicamente por fornecer componentes estruturais e visuais prontos para uso (como modais, menus responsivos, botões e formulários estruturados), garantindo agilidade no desenvolvimento de um dashboard limpo e corporativo. |
+| Banco de Dados | SQLite                           | Configuração zero de servidores para homologação local. Perfeito para o escopo do desafio; a migração para MySQL ou PostgreSQL exige apenas a alteração de variáveis simples no arquivo de ambiente (`.env`).                                                                                                                                                                                            |
+| Assets         | Vite                             | Bundler padrão do ecossistema moderno do Laravel, oferecendo compilação rápida e hot-reload em tempo de desenvolvimento.                                                                                                                                                                                                                                                                                 |
+| Testes         | PHPUnit 11                       | Totalmente integrado ao framework Laravel, permitindo a execução de testes automatizados unitários e de integração utilizando uma base de dados SQLite isolada em memória (`:memory:`).                                                                                                                                                                                                                  |
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Por que Blade e Bootstrap em vez de SPAs ou Tailwind?
 
-```bash
-composer require laravel/boost --dev
+O escopo do projeto ressalta que a produtividade e o foco em fundamentos importam muito mais do que a adição de recursos secundários pesados. Para uma aplicação baseada em operações CRUD como esta, a combinação de Blade com Bootstrap entrega uma interface altamente profissional, ágil e responsiva sem o overhead técnico e o tempo gasto configurando folhas de estilo utilitárias do zero ou mantendo uma API REST separada para alimentar um frontend em Vue/React.
 
-php artisan boost:install
+## Aplicação de DRY, SOLID e Componentização
+
+### 1. Princípio DRY (Don't Repeat Yourself)
+
+Evitamos a repetição desnecessária de código tanto na camada visual quanto na lógica.
+
+No frontend, aplicamos a Herança de Templates através do arquivo base:
+
+```text
+layouts/app.blade.php
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+No backend, regras complexas como a de identificar o técnico ideal foram encapsuladas estritamente no método:
 
-## Contributing
+```php
+Responsavel::obterMenosOcupado()
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+sendo reutilizadas onde necessário.
 
-## Code of Conduct
+### 2. Princípios SOLID (Responsabilidade Única)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Estruturamos o código utilizando o padrão MVC de forma rígida.
 
-## Security Vulnerabilities
+Mantivemos controladores limpos e enxutos (_Thin Controllers_), delegando validações formais de requisições HTTP às rotas adequadas e deixando que os Models cuidem ativamente das regras de negócio e filtros dinâmicos de dados (_Fat Models_).
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Definição de "chamado em aberto"
 
-## License
+Para fins da distribuição inteligente e do bloqueio preventivo de desativação de técnicos, consideramos demandas ativas aquelas que possuem o status definido como:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `aberto`
+- `em_andamento`
+
+Chamados classificados como `resolvido` entram no fluxo de concluídos e deixam de somar pontos na carga de trabalho.
+
+---
+
+# FUNCIONALIDADES IMPLEMENTADAS
+
+- Cadastro completo de chamados contendo título, descrição, prioridade (baixa, média, alta), status e técnico responsável.
+- Distribuição automática inteligente que identifica em tempo real qual profissional ativo possui o menor volume de demandas pendentes na fila.
+- Edição de chamados com atualização instantânea de status e reatribuição de responsáveis.
+- Histórico de alterações estruturado que registra de forma automatizada no banco de dados todas as movimentações de status e troca de responsáveis.
+- Listagem geral enriquecida com filtros simultâneos combinando status, níveis de prioridade e técnicos.
+- Gestão de responsáveis contendo listagem de profissionais, inserção automática e sistema de ativação/desativação (Toggle).
+- Proteção de desativação que impede a inativação de um técnico de suporte que possua chamados ativos em sua fila.
+- Rastreamento completo de chamados anteriores que mapeia o histórico de movimentações e exibe, no perfil do técnico, todos os chamados em que ele trabalhou no passado.
+
+---
+
+# REQUISITOS
+
+- PHP >= 8.2
+- Composer
+- Node.js >= 18
+- NPM
+
+O sistema utiliza a tecnologia SQLite, dispensando qualquer instalação ou configuração manual de servidores de banco de dados externos.
+
+---
+
+# INSTALAÇÃO E EXECUÇÃO
+
+Siga as etapas abaixo para configurar o ecossistema localmente.
+
+## 1. Clone o repositório do projeto
+
+```bash
+git clone https://github.com/filipe-vitorino/sistema-chamados.git
+
+cd sistema-chamados
+```
+
+## 2. Instale as dependências de backend e frontend
+
+```bash
+composer install
+
+npm install
+```
+
+## 3. Configure o arquivo de ambiente
+
+```bash
+cp .env.example .env
+
+php artisan key:generate
+```
+
+**Nota:** Certifique-se de que o arquivo `.env` gerado esteja com a variável `DB_CONNECTION=sqlite`.
+
+## 4. Execute as migrações e popule o banco de dados
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+O Seeder integrado cria automaticamente os técnicos exigidos pela especificação e uma massa de chamados fictícios distribuídos.
+
+## 5. Compile os recursos visuais
+
+```bash
+npm run build
+```
+
+## 6. Inicie o servidor embutido do Laravel
+
+```bash
+php artisan serve
+```
+
+Abra o navegador e acesse:
+
+```text
+http://localhost:8000
+```
+
+---
+
+# EXECUTANDO OS TESTES
+
+Para rodar toda a suíte automatizada de verificação de comportamento:
+
+```bash
+php artisan test
+```
+
+A arquitetura de testes utiliza um banco de dados SQLite simulado estritamente em memória (`:memory:`), garantindo execuções rápidas e prevenindo alterações indesejadas na base principal.
+
+## Ajustes Técnicos de Infraestrutura de Testes
+
+O projeto adota o PHPUnit 11 (padrão nativo do Laravel 11).
+
+Implementamos correções de infraestrutura nos testes para garantir compatibilidade com o Windows:
+
+1. Ativação de Attribute Casting (`protected $casts`) no Model `Responsavel` para converter os retornos numéricos do SQLite em booleanos nativos.
+2. Substituição de geradores de texto físicos (`realText`) no `ChamadoFactory` por métodos em memória RAM (`text`), eliminando falhas de Segmentation Fault.
+
+## Cobertura da Suite de Testes Automatizados
+
+### Testes Unitários (`tests/Unit/`)
+
+#### ResponsavelTest.php
+
+Valida:
+
+- O comportamento lógico da regra de negócio que encontra o técnico menos ocupado (`obterMenosOcupado`)
+- O mecanismo de resgate de projetos passados (`chamadosAnteriores`)
+- Ignorar responsáveis inativos e chamados resolvidos
+- Relacionamentos
+
+#### ChamadoTest.php
+
+Valida:
+
+- A integridade da estrutura do chamado
+- Relacionamento com responsável
+- Relacionamento com histórico
+
+### Testes de Integração (`tests/Feature/`)
+
+#### ChamadoControllerTest.php
+
+Valida:
+
+- Carregamento da tela de listagem
+- Validação obrigatória de campos
+- Criação de chamados
+- Geração automática de histórico
+- Atualização de status
+- Auditoria de alterações
+
+#### ResponsavelControllerTest.php
+
+Valida:
+
+- Exibição da lista de responsáveis
+- Carregamento da fila individual
+- Funcionamento do filtro de projetos anteriores
+- Bloqueio de desativação para responsáveis com pendências
+- Desativação permitida para responsáveis sem chamados atribuídos
+
+---
+
+# ESTRUTURA DO PROJETO
+
+```text
+app/
+├── Http/Controllers/
+│   ├── ChamadoController.php
+│   └── ResponsavelController.php
+├── Models/
+│   ├── Chamado.php
+│   ├── Responsavel.php
+│   └── HistoricoChamado.php
+
+database/
+├── migrations/
+├── factories/
+└── seeders/
+
+resources/views/
+├── layouts/app.blade.php
+├── chamados/
+└── responsaveis/
+
+routes/
+└── web.php
+
+tests/
+├── Unit/
+└── Feature/
+```
+
+---
+
+# TRADE-OFFS E DECISÕES DE PROJETO
+
+## Autenticação não implementada
+
+O escopo inicial foca na resolução do problema de distribuição e rastreabilidade interna de tarefas.
+
+Em um ambiente real de produção, o incremento imediato seria a integração com ferramentas como o Laravel Breeze.
+
+## Nome de responsável automatizado no cadastro rápido
+
+O documento exigia a flexibilidade de selecionar técnicos e gerenciar seu estado, sem obrigatoriedade de formulários completos.
+
+Para otimizar a fluidez, a criação gera nomes utilizando fakers em memória.
+
+## Uso do SQLite
+
+Escolhido para tornar a avaliação do código imediata e livre de fricções com ferramentas extras de infraestrutura (como Docker ou servidores locais de banco), mantendo os arquivos portáteis.
+
+## Sem paginação na listagem
+
+Dado o escopo de um desafio focado em monitoramento ágil de equipes enxutas, a exibição de painéis filtráveis atendeu as regras propostas sem a complexidade extra de sistemas de paginação.
