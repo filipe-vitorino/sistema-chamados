@@ -92,13 +92,16 @@ class ChamadoController extends Controller
             'responsavel_id' => 'required|exists:responsaveis,id',
         ]);
 
-        Chamado::create([
+        $chamado = Chamado::create([
             'titulo' => $dados['titulo'],
             'descricao' => $dados['descricao'],
             'prioridade' => $dados['prioridade'],
             'status' => 'aberto',
-            'responsavel_id' =>
-            $dados['responsavel_id'],
+            'responsavel_id' => $dados['responsavel_id'],
+        ]);
+
+        $chamado->historicos()->create([
+            'descricao' => 'Chamado criado',
         ]);
 
         return redirect()
@@ -110,7 +113,15 @@ class ChamadoController extends Controller
      */
     public function show(Chamado $chamado)
     {
-        //
+        $chamado->load(
+            'responsavel',
+            'historicos'
+        );
+
+        return view(
+            'chamados.show',
+            compact('chamado')
+        );
     }
 
     /**
@@ -158,7 +169,27 @@ class ChamadoController extends Controller
         ) {
             $dados['resolvido_em'] = null;
         }
+
+        $statusAnterior = $chamado->status;
+        $responsavelAnteriorId = $chamado->responsavel_id;
+        $responsavelAnteriorNome = $chamado->responsavel->nome;
+
         $chamado->update($dados);
+
+        $chamado->refresh();
+        if ($statusAnterior !== $chamado->status) {
+            $chamado->historicos()->create([
+                'descricao' =>
+                "Status alterado de {$statusAnterior} para {$chamado->status}"
+            ]);
+        }
+
+        if ($responsavelAnteriorId !== $chamado->responsavel_id) {
+            $chamado->historicos()->create([
+                'descricao' =>
+                "Responsável alterado de {$responsavelAnteriorNome} para {$chamado->responsavel->nome}"
+            ]);
+        }
 
         return redirect()
             ->route('chamados.index');

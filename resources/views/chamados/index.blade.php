@@ -182,7 +182,7 @@
                         href="{{ route('chamados.show', $chamado) }}"
                         class="btn btn-sm btn-info">
 
-                        Ver
+                        Histórico
 
                     </a>
 
@@ -190,7 +190,7 @@
                         href="{{ route('chamados.edit', $chamado) }}"
                         class="btn btn-sm btn-warning">
 
-                        Status
+                        Editar
 
                     </a>
 
