@@ -221,38 +221,6 @@ Valida:
 
 ---
 
-# ESTRUTURA DO PROJETO
-
-```text
-app/
-├── Http/Controllers/
-│   ├── ChamadoController.php
-│   └── ResponsavelController.php
-├── Models/
-│   ├── Chamado.php
-│   ├── Responsavel.php
-│   └── HistoricoChamado.php
-
-database/
-├── migrations/
-├── factories/
-└── seeders/
-
-resources/views/
-├── layouts/app.blade.php
-├── chamados/
-└── responsaveis/
-
-routes/
-└── web.php
-
-tests/
-├── Unit/
-└── Feature/
-```
-
----
-
 # TRADE-OFFS E DECISÕES DE PROJETO
 
 ## Autenticação não implementada
