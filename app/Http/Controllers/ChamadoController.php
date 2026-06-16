@@ -13,44 +13,16 @@ class ChamadoController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Chamado::with('responsavel');
-
-        if ($request->filled('status')) {
-            $query->where(
-                'status',
-                $request->status
-            );
-        }
-
-        if ($request->filled('prioridade')) {
-            $query->where(
-                'prioridade',
-                $request->prioridade
-            );
-        }
-
-        if ($request->filled('responsavel_id')) {
-            $query->where(
-                'responsavel_id',
-                $request->responsavel_id
-            );
-        }
-
-        $chamados = $query
+        $chamados = Chamado::with('responsavel')
+            ->when($request->status, fn($query, $status) => $query->where('status', $status))
+            ->when($request->prioridade, fn($query, $prioridade) => $query->where('prioridade', $prioridade))
+            ->when($request->responsavel_id, fn($query, $responsavelId) => $query->where('responsavel_id', $responsavelId))
             ->latest()
             ->get();
 
-        $responsaveis =
-            Responsavel::orderBy('nome')
-            ->get();
+        $responsaveis = Responsavel::orderBy('nome')->get();
 
-        return view(
-            'chamados.index',
-            compact(
-                'chamados',
-                'responsaveis'
-            )
-        );
+        return view('chamados.index', compact('chamados', 'responsaveis'));
     }
 
     /**
@@ -101,7 +73,9 @@ class ChamadoController extends Controller
         ]);
 
         $chamado->historicos()->create([
-            'descricao' => 'Chamado criado',
+            'campo_alterado' => 'criacao',
+            'valor_antigo'   => null,
+            'valor_novo'     => 'aberto'
         ]);
 
         return redirect()
@@ -150,49 +124,41 @@ class ChamadoController extends Controller
     public function update(Request $request, Chamado $chamado)
     {
         $dados = $request->validate([
-            'status' =>
-            'required|in:aberto,em_andamento,resolvido',
-
-            'responsavel_id' =>
-            'required|exists:responsaveis,id',
+            'status' => 'required|in:aberto,em_andamento,resolvido',
+            'responsavel_id' => 'required|exists:responsaveis,id',
         ]);
-        if (
-            $dados['status'] === 'resolvido'
-            && $chamado->status !== 'resolvido'
-        ) {
+
+        if ($dados['status'] === 'resolvido' && $chamado->status !== 'resolvido') {
             $dados['resolvido_em'] = now();
         }
 
-        if (
-            $dados['status'] !== 'resolvido'
-            && $chamado->status === 'resolvido'
-        ) {
+        if ($dados['status'] !== 'resolvido' && $chamado->status === 'resolvido') {
             $dados['resolvido_em'] = null;
         }
 
         $statusAnterior = $chamado->status;
         $responsavelAnteriorId = $chamado->responsavel_id;
-        $responsavelAnteriorNome = $chamado->responsavel->nome;
 
         $chamado->update($dados);
-
         $chamado->refresh();
+
         if ($statusAnterior !== $chamado->status) {
             $chamado->historicos()->create([
-                'descricao' =>
-                "Status alterado de {$statusAnterior} para {$chamado->status}"
+                'campo_alterado' => 'status',
+                'valor_antigo'   => $statusAnterior,
+                'valor_novo'     => $chamado->status
             ]);
         }
 
-        if ($responsavelAnteriorId !== $chamado->responsavel_id) {
+        if ($responsavelAnteriorId != $chamado->responsavel_id) {
             $chamado->historicos()->create([
-                'descricao' =>
-                "Responsável alterado de {$responsavelAnteriorNome} para {$chamado->responsavel->nome}"
+                'campo_alterado' => 'responsavel_id',
+                'valor_antigo'   => $responsavelAnteriorId,
+                'valor_novo'     => $chamado->responsavel_id
             ]);
         }
 
-        return redirect()
-            ->route('chamados.index');
+        return redirect()->route('chamados.index');
     }
 
     /**

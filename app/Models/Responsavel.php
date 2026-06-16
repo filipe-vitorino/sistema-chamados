@@ -20,6 +20,15 @@ class Responsavel extends Model
         return $this->hasMany(Chamado::class, 'responsavel_id');
     }
 
+    public function chamadosAnteriores()
+    {
+        return Chamado::whereHas('historicos', function ($query) {
+            $query->where('campo_alterado', 'responsavel_id')
+                ->where('valor_antigo', $this->id);
+        })->where('responsavel_id', '!=', $this->id)->get();
+    }
+
+
     public static function obterMenosOcupado()
     {
         return self::where('ativo', true)
@@ -29,6 +38,9 @@ class Responsavel extends Model
             ->orderBy('chamados_count', 'asc')
             ->first();
     }
+
+
+
     public static function gerarNomeAleatorio(): string
     {
         $nomes = [

@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('historico_chamados', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('chamado_id')->constrained()->cascadeOnDelete();
-            $table->text('descricao');
+            $table->foreignId('chamado_id')->constrained()->onDelete('cascade');
+            $table->string('campo_alterado');
+            $table->string('valor_antigo')->nullable();
+            $table->string('valor_novo')->nullable();
             $table->timestamps();
         });
     }

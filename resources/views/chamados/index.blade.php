@@ -20,102 +20,43 @@
 
 </div>
 
-<form
-    method="GET"
-    class="mb-4">
-
+<form method="GET" class="mb-4">
     <div class="row">
-
         <div class="col-md-3">
-
-            <select
-                name="status"
-                class="form-select">
-
-                <option value="">
-                    Todos os Status
-                </option>
-
-                <option value="aberto">
-                    Aberto
-                </option>
-
-                <option value="em_andamento">
-                    Em andamento
-                </option>
-
-                <option value="resolvido">
-                    Resolvido
-                </option>
-
+            <select name="status" class="form-select">
+                <option value="">Todos os Status</option>
+                <option value="aberto" @selected(request('status') == 'aberto')>Aberto</option>
+                <option value="em_andamento" @selected(request('status') == 'em_andamento')>Em andamento</option>
+                <option value="resolvido" @selected(request('status') == 'resolvido')>Resolvido</option>
             </select>
-
         </div>
 
         <div class="col-md-3">
-
-            <select
-                name="prioridade"
-                class="form-select">
-
-                <option value="">
-                    Todas as Prioridades
-                </option>
-
-                <option value="alta">
-                    Alta
-                </option>
-
-                <option value="media">
-                    Média
-                </option>
-
-                <option value="baixa">
-                    Baixa
-                </option>
-
+            <select name="prioridade" class="form-select">
+                <option value="">Todas as Prioridades</option>
+                <option value="alta" @selected(request('prioridade') == 'alta')>Alta</option>
+                <option value="media" @selected(request('prioridade') == 'media')>Média</option>
+                <option value="baixa" @selected(request('prioridade') == 'baixa')>Baixa</option>
             </select>
-
         </div>
 
         <div class="col-md-3">
-
-            <select
-                name="responsavel_id"
-                class="form-select">
-
-                <option value="">
-                    Todos os Responsáveis
-                </option>
-
+            <select name="responsavel_id" class="form-select">
+                <option value="">Todos os Responsáveis</option>
                 @foreach($responsaveis as $responsavel)
-
-                    <option
-                        value="{{ $responsavel->id }}">
-
+                    <option value="{{ $responsavel->id }}" @selected(request('responsavel_id') == $responsavel->id)>
                         {{ $responsavel->nome }}
-
                     </option>
-
                 @endforeach
-
             </select>
-
         </div>
 
         <div class="col-md-3">
-
-            <button
-                class="btn btn-primary w-100">
-
+            <button class="btn btn-primary w-100">
                 Filtrar
-
             </button>
-
         </div>
-
     </div>
-
 </form>
 
 <table class="table table-striped">

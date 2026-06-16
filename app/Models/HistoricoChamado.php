@@ -10,7 +10,9 @@ class HistoricoChamado extends Model
 {
     protected $fillable = [
         'chamado_id',
-        'descricao'
+        'campo_alterado',
+        'valor_antigo',
+        'valor_novo'
     ];
 
     public function chamado(): BelongsTo
