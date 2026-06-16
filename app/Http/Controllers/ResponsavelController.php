@@ -33,60 +33,8 @@ class ResponsavelController extends Controller
      */
     public function store(Request $request)
     {
-        $nomes = [
-            'João Silva',
-            'Maria Santos',
-            'Carlos Oliveira',
-            'Ana Souza',
-            'Pedro Lima',
-            'Lucas Costa',
-            'Juliana Rocha',
-            'Fernanda Alves',
-            'Bruno Martins',
-            'Gabriel Ferreira',
-            'Amanda Ribeiro',
-            'Rodrigo Melo',
-            'Camila Carvalho',
-            'Rafael Teixeira',
-            'Larissa Gomes',
-            'Diego Almeida',
-            'Beatriz Barbosa',
-            'Guilherme Pinto',
-            'Letícia Correia',
-            'Gustavo Cardoso',
-            'Mariana Cavalcanti',
-            'Felipe Dias',
-            'Sofia Castro',
-            'Thiago Cunha',
-            'Bárbara Fernandes',
-            'Mateus Fontana',
-            'Carolina Moura',
-            'Leonardo Rocha',
-            'Gabriela Nunes',
-            'Vitor Mendes',
-            'Isabela Vieira',
-            'Daniel Marques',
-            'Manuela Medeiros',
-            'Eduardo Nascimento',
-            'Alice Ramos',
-            'André Moraes',
-            'Luana Freitas',
-            'Samuel Santana',
-            'Olivia Azevedo',
-            'Caio Pereira',
-            'Laura Borges',
-            'Henrique Rezende',
-            'Valentina Farias',
-            'Murilo Aragão',
-            'Heloísa Guimarães',
-            'Vinícius Assis',
-            'Lorena Viana',
-            'Arthur Lopes',
-            'Cecília Machado',
-            'Matheus Nogueira'
-        ];
         Responsavel::create([
-            'nome' => $nomes[array_rand($nomes)],
+            'nome' => Responsavel::gerarNomeAleatorio(),
             'ativo' => true
         ]);
 
@@ -96,9 +44,20 @@ class ResponsavelController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Responsavel $responsavel)
+    public function show(Request $request, Responsavel $responsavel)
     {
-        //
+        $query = $responsavel->chamados()->whereIn('status', ['aberto', 'em_andamento']);
+        $ordenacao = $request->input('ordenar_por', 'chegada');
+
+        if ($ordenacao === 'prioridade') {
+            $query->orderByRaw("FIELD(prioridade, 'alta', 'media', 'baixa') ASC");
+        } else {
+            $query->orderBy('created_at', 'asc');
+        }
+
+        $chamados = $query->get();
+
+        return view('responsaveis.chamados', compact('responsavel', 'chamados', 'ordenacao'));
     }
 
     /**

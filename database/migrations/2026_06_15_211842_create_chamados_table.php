@@ -31,7 +31,6 @@ return new class extends Migration
             ]);
 
             $table->foreignId('responsavel_id')
-                ->nullable()
                 ->constrained('responsaveis');
 
             $table->timestamps();
