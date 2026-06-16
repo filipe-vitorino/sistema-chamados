@@ -32,13 +32,10 @@ class ChamadoControllerTest extends TestCase
             'responsavel_id' => $responsavel->id,
         ];
 
-        // Simula o envio do formulário POST
         $response = $this->post(route('chamados.store'), $dadosFormulario);
 
-        // Verifica se redirecionou com sucesso
         $response->assertRedirect(route('chamados.index'));
 
-        // Verifica se o chamado foi parar no banco
         $this->assertDatabaseHas('chamados', [
             'titulo' => 'Meu computador não liga',
             'status' => 'aberto',
@@ -46,7 +43,6 @@ class ChamadoControllerTest extends TestCase
 
         $chamadoCriado = Chamado::first();
 
-        // Verifica se o histórico inicial foi gerado
         $this->assertDatabaseHas('historico_chamados', [
             'chamado_id' => $chamadoCriado->id,
             'campo_alterado' => 'criacao',
@@ -67,23 +63,29 @@ class ChamadoControllerTest extends TestCase
             'responsavel_id' => $responsavel->id,
         ];
 
-        // Simula edição PUT
         $response = $this->put(route('chamados.update', $chamado), $dadosAtualizados);
 
         $response->assertRedirect(route('chamados.index'));
 
-        // Confirma a atualização no banco
         $this->assertDatabaseHas('chamados', [
             'id' => $chamado->id,
             'status' => 'resolvido'
         ]);
 
-        // Confirma se o Controller salvou a troca de status no histórico
         $this->assertDatabaseHas('historico_chamados', [
             'chamado_id' => $chamado->id,
             'campo_alterado' => 'status',
             'valor_antigo' => 'aberto',
             'valor_novo' => 'resolvido'
         ]);
+    }
+
+    public function test_nao_permite_criar_chamado_sem_dados_obrigatorios()
+    {
+        $response = $this->post(route('chamados.store'), []);
+
+        $response->assertSessionHasErrors(['titulo', 'descricao', 'prioridade', 'responsavel_id']);
+
+        $this->assertDatabaseCount('chamados', 0);
     }
 }

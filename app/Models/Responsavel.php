@@ -16,6 +16,10 @@ class Responsavel extends Model
         'ativo'
     ];
 
+    protected $casts = [
+        'ativo' => 'boolean',
+    ];
+
     public function chamados(): HasMany
     {
         return $this->hasMany(Chamado::class, 'responsavel_id');
