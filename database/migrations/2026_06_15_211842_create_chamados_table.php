@@ -33,6 +33,8 @@ return new class extends Migration
             $table->foreignId('responsavel_id')
                 ->constrained('responsaveis');
 
+
+            $table->timestamp('resolvido_em')->nullable();
             $table->timestamps();
         });
     }

@@ -1,3 +1,13 @@
+@if(session('erro'))
+
+    <div class="alert alert-danger">
+
+        {{ session('erro') }}
+
+    </div>
+
+@endif
+
 @extends('layouts.app')
 
 @section('title', 'Responsáveis')

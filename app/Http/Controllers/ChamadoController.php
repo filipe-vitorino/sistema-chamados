@@ -58,10 +58,15 @@ class ChamadoController extends Controller
      */
     public function create()
     {
-        $responsaveis = Responsavel::where(
-            'ativo',
-            true
-        )->get();
+        $responsaveis = Responsavel::where('ativo', true)
+            ->withCount(['chamados' => function ($query) {
+                $query->whereIn('status', [
+                    'aberto',
+                    'em_andamento'
+                ]);
+            }])
+            ->orderBy('chamados_count')
+            ->get();
 
         $responsavelSugerido =
             Responsavel::obterMenosOcupado();
@@ -113,7 +118,19 @@ class ChamadoController extends Controller
      */
     public function edit(Chamado $chamado)
     {
-        //
+        $responsaveis = Responsavel::where(
+            'ativo',
+            true
+        )->orderBy('nome')
+            ->get();
+
+        return view(
+            'chamados.edit',
+            compact(
+                'chamado',
+                'responsaveis'
+            )
+        );
     }
 
     /**
@@ -121,7 +138,30 @@ class ChamadoController extends Controller
      */
     public function update(Request $request, Chamado $chamado)
     {
-        //
+        $dados = $request->validate([
+            'status' =>
+            'required|in:aberto,em_andamento,resolvido',
+
+            'responsavel_id' =>
+            'required|exists:responsaveis,id',
+        ]);
+        if (
+            $dados['status'] === 'resolvido'
+            && $chamado->status !== 'resolvido'
+        ) {
+            $dados['resolvido_em'] = now();
+        }
+
+        if (
+            $dados['status'] !== 'resolvido'
+            && $chamado->status === 'resolvido'
+        ) {
+            $dados['resolvido_em'] = null;
+        }
+        $chamado->update($dados);
+
+        return redirect()
+            ->route('chamados.index');
     }
 
     /**

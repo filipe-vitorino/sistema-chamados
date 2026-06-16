@@ -15,16 +15,16 @@ class Chamado extends Model
         'descricao',
         'prioridade',
         'status',
-        'responsavel_id'
+        'responsavel_id',
+        'resolvido_em'
+    ];
+
+    protected $casts = [
+        'resolvido_em' => 'datetime',
     ];
 
     public function responsavel(): BelongsTo
     {
         return $this->belongsTo(Responsavel::class, 'responsavel_id');
-    }
-
-    public function scopeEmAberto($query)
-    {
-        return $query->whereIn('status', ['aberto', 'em_andamento']);
     }
 }
