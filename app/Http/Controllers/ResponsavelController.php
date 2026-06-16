@@ -136,5 +136,6 @@ class ResponsavelController extends Controller
         }
 
         return view('responsaveis.chamados', compact('responsavel', 'chamados'));
+        //return response()->json($chamados);
     }
 }

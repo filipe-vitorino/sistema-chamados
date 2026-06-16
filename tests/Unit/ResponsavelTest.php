@@ -13,16 +13,14 @@ class ResponsavelTest extends TestCase
 
     // ─── obterMenosOcupado ────────────────────────────────────────────────────
 
-    /** @test */
-    public function retorna_null_quando_nenhum_responsavel_ativo_existe()
+    public function test_retorna_null_quando_nenhum_responsavel_ativo_existe()
     {
         Responsavel::factory()->create(['ativo' => false]);
 
         $this->assertNull(Responsavel::obterMenosOcupado());
     }
 
-    /** @test */
-    public function retorna_responsavel_com_menos_chamados_abertos_ou_em_andamento()
+    public function test_retorna_responsavel_com_menos_chamados_abertos_ou_em_andamento()
     {
         $ocupado = Responsavel::factory()->create(['ativo' => true]);
         $livre   = Responsavel::factory()->create(['ativo' => true]);
@@ -40,8 +38,7 @@ class ResponsavelTest extends TestCase
         $this->assertEquals($livre->id, Responsavel::obterMenosOcupado()->id);
     }
 
-    /** @test */
-    public function ignora_chamados_resolvidos_ao_calcular_ocupacao()
+    public function test_ignora_chamados_resolvidos_ao_calcular_ocupacao()
     {
         $comResolvidos   = Responsavel::factory()->create(['ativo' => true]);
         $semResolvidos   = Responsavel::factory()->create(['ativo' => true]);
@@ -59,8 +56,7 @@ class ResponsavelTest extends TestCase
         $this->assertEquals($comResolvidos->id, Responsavel::obterMenosOcupado()->id);
     }
 
-    /** @test */
-    public function ignora_responsaveis_inativos_ao_obter_menos_ocupado()
+    public function test_ignora_responsaveis_inativos_ao_obter_menos_ocupado()
     {
         $inativo = Responsavel::factory()->create(['ativo' => false]);
         $ativo   = Responsavel::factory()->create(['ativo' => true]);
@@ -76,8 +72,7 @@ class ResponsavelTest extends TestCase
     }
 
 
-    /** @test */
-    public function retorna_chamados_onde_responsavel_foi_substituido()
+    public function test_retorna_chamados_onde_responsavel_foi_substituido()
     {
         $antigo = Responsavel::factory()->create(['ativo' => true]);
         $novo   = Responsavel::factory()->create(['ativo' => true]);
@@ -99,8 +94,7 @@ class ResponsavelTest extends TestCase
         $this->assertEquals($chamado->id, $anteriores->first()->id);
     }
 
-    /** @test */
-    public function nao_retorna_chamados_ainda_atribuidos_ao_responsavel()
+    public function test_nao_retorna_chamados_ainda_atribuidos_ao_responsavel()
     {
         $responsavel = Responsavel::factory()->create(['ativo' => true]);
 
@@ -119,8 +113,7 @@ class ResponsavelTest extends TestCase
     }
 
 
-    /** @test */
-    public function gera_nome_aleatorio_como_string_nao_vazia()
+    public function test_gera_nome_aleatorio_como_string_nao_vazia()
     {
         $nome = Responsavel::gerarNomeAleatorio();
 
@@ -130,8 +123,7 @@ class ResponsavelTest extends TestCase
 
     // ─── relacionamentos ──────────────────────────────────────────────────────
 
-    /** @test */
-    public function responsavel_possui_relacao_com_chamados()
+    public function test_responsavel_possui_relacao_com_chamados()
     {
         $responsavel = Responsavel::factory()->create();
         Chamado::factory()->count(2)->create(['responsavel_id' => $responsavel->id]);

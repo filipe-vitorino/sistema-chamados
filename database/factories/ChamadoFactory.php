@@ -10,8 +10,8 @@ class ChamadoFactory extends Factory
     public function definition(): array
     {
         return [
-            'titulo' => fake()->sentence(4),
-            'descricao' => fake()->realText(200),
+            'titulo' => fake()->sentence(),
+            'descricao' => fake()->text(),
             'prioridade' => fake()->randomElement(['baixa', 'media', 'alta']),
             'status' => fake()->randomElement(['aberto', 'em_andamento']),
             'responsavel_id' => Responsavel::factory(),
