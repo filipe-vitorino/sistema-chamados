@@ -1,71 +1,131 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sistema de Chamados</title>
+@extends('layouts.app')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+@section('title', 'Dashboard')
 
-<div class="container mt-5">
+@section('content')
 
-    <h1 class="mb-4">
-        Sistema de Chamados
-    </h1>
+<h1 class="mb-4">Dashboard</h1>
 
-    <div class="row">
+<div class="row">
 
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Responsáveis Ativos</h6>
 
-                    <h5>Responsáveis Ativos</h5>
-
-                    <h2>0</h2>
-
-                </div>
+                <h2>
+                    {{ $responsaveisAtivos }}
+                </h2>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Chamados Abertos</h6>
 
-                    <h5>Chamados Abertos</h5>
-
-                    <h2>0</h2>
-
-                </div>
+                <h2>
+                    {{ $chamadosAbertos }}
+                </h2>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Em Andamento</h6>
 
-                    <h5>Em Andamento</h5>
-
-                    <h2>0</h2>
-
-                </div>
+                <h2>
+                    {{ $chamadosAndamento }}
+                </h2>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Resolvidos</h6>
 
-                    <h5>Resolvidos</h5>
-
-                    <h2>0</h2>
-
-                </div>
+                <h2>
+                    {{ $chamadosResolvidos }}
+                </h2>
             </div>
         </div>
+    </div>
+
+</div>
+
+<div class="card mt-4">
+
+    <div class="card-header">
+        Últimos Chamados
+    </div>
+
+    <div class="card-body">
+
+        @if($ultimosChamados->isEmpty())
+
+            <p>Nenhum chamado cadastrado.</p>
+
+        @else
+
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach($ultimosChamados as $chamado)
+
+                        <tr>
+
+                            <td>
+                                {{ $chamado->id }}
+                            </td>
+
+                            <td>
+                                {{ $chamado->titulo }}
+                            </td>
+
+                            <td>
+                                {{ $chamado->status }}
+                            </td>
+
+                        </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
+        @endif
 
     </div>
 
 </div>
 
-</body>
-</html>
+<div class="mt-4">
+
+    <a href="{{ route('responsaveis.index') }}"
+       class="btn btn-primary">
+        Gerenciar Responsáveis
+    </a>
+
+    <a href="{{ route('chamados.index') }}"
+       class="btn btn-success">
+        Gerenciar Chamados
+    </a>
+
+</div>
+
+@endsection
